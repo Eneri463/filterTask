@@ -32,45 +32,18 @@ import java.util.List;
 @AllArgsConstructor
 public class ComputerController {
 
-    private CreateCurrentModelService createCurrentModelService;
     private ComputerSpecification computerSpecification;
     private ComputerServiceInterface computerService;
-    private ComputerCategoryServiceInterface computerCategoryService;
-    private ComputerProcessorTypeServiceInterface computerProcessorTypeService;
 
     @GetMapping(value= "/models", params = "type=computer")
     public ResponseEntity<List<ComputerDTO>> getComputers(
             @Parameter(description = "Используйте type=computer с этими параметрами. Тело ответа - ComputerDTO. " +
                     "Для сортировки укажите столбец сортировки (name, price) и по желанию тип (asc,desc) " +
-                    "(например, sort=price,desc). Для поиска используйте параметр search") ComputerParams computerParams
+                    "(например, sort=price,desc). Для поиска используйте параметр search")
+            ComputerParams computerParams
     )
     {
         Specification<Computer> spec = computerSpecification.build(computerParams);
         return ResponseEntity.ok(computerService.getAllComputers(spec));
-    }
-
-    @PostMapping("/model/create/computer")
-    public ResponseEntity<ComputerDTO> createComputer
-            (@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Все значения NotNull. " +
-                    "ApplianceId - id таблицы 'техника'(сущность appliance), с которой будет " +
-                    "связана добавляемая модель компьютера")
-             @RequestBody @Valid ComputerRequestDTO request)
-    {
-
-        ComputerCategory category = computerCategoryService.getByName(request.getCategory());
-
-        if (category == null)
-            category = computerCategoryService.create(new ComputerCategory(null, request.getCategory()));
-
-        ComputerProcessorType processorType = computerProcessorTypeService.getByName(request.getProcessor());
-
-        if (processorType == null)
-            processorType = computerProcessorTypeService.create(new ComputerProcessorType(null, request.getProcessor()));
-
-        Model model = createCurrentModelService.createModel(request);
-
-        Computer computer = new Computer(null, category, processorType, model);
-
-        return new ResponseEntity<>(computerService.create(computer).createDTO(), HttpStatus.CREATED);
     }
 }

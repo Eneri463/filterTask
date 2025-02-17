@@ -26,8 +26,6 @@ import java.util.List;
 @EnableAutoConfiguration
 @AllArgsConstructor
 public class VacuumCleanerController {
-
-    private CreateCurrentModelService createCurrentModelService;
     private VacuumCleanerSpecification vacuumCleanerSpecification;
     private VacuumCleanerServiceInterface vacuumCleanerService;
 
@@ -38,22 +36,11 @@ public class VacuumCleanerController {
             @Parameter(description = "Используйте параметр type=vacuum_cleaner с этими параметрами. " +
                     "Тело ответа - VacuumCleanerDTO Для сортировки укажите столбец сортировки " +
                     "(name, price) и по желанию тип (asc,desc) (например, sort=price,desc). " +
-                    "Для поиска используйте параметр search")  VacuumCleanerParams vacuumCleanerParams
+                    "Для поиска используйте параметр search")  
+            VacuumCleanerParams vacuumCleanerParams
     )
     {
         Specification<VacuumCleaner> spec = vacuumCleanerSpecification.build(vacuumCleanerParams);
         return ResponseEntity.ok(vacuumCleanerService.getAllVacuumCleaners(spec));
-    }
-
-    @PostMapping("/model/create/vacuumCleaner")
-    public ResponseEntity<VacuumCleanerDTO> createVacuumCleaner(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Все значения NotNull. ApplianceId - id таблицы " +
-                    "'техника'(сущность appliance), с которой будет связана добавляемая модель пылесоса")
-            @RequestBody @Valid VacuumCleanerRequestDTO request)
-    {
-        Model model = createCurrentModelService.createModel(request);
-        VacuumCleaner vacuumCleaner = new VacuumCleaner(null, request.getVolume(), request.getNumberOfModes(), model);
-
-        return new ResponseEntity<>(vacuumCleanerService.create(vacuumCleaner).createDTO(), HttpStatus.CREATED);
     }
 }

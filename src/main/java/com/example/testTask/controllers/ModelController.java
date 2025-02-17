@@ -25,7 +25,8 @@ public class ModelController {
             @Parameter(description = "Эти параметры применяются, когда параметр type отсутствует (равен null). Такой запрос позволяет " +
                     "просмотреть всю технику независимо от её вида (по общим атрибутам). Тело ответа - ModelDTO." +
                     "Для сортировки укажите столбец сортировки (name, price) и по желанию тип (asc,desc) " +
-                    "(например, sort=price,desc). Для поиска используйте параметр search") ParamsDTO paramsDTO
+                    "(например, sort=price,desc). Для поиска используйте параметр search")
+            ParamsDTO paramsDTO
     )
     {
         Specification<Model> spec = GeneralSpecification.mainFilters(paramsDTO);

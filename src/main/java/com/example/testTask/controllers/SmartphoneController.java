@@ -26,8 +26,6 @@ import java.util.List;
 @EnableAutoConfiguration
 @AllArgsConstructor
 public class SmartphoneController {
-
-    private CreateCurrentModelService createCurrentModelService;
     private SmartphoneSpecification smartphoneSpecification;
     private SmartphoneServiceInterface smartphoneService;
 
@@ -36,23 +34,11 @@ public class SmartphoneController {
             @Parameter(description = "Используйте параметр type=smartphone с этими параметрами. " +
                     "Тело ответа - SmartphoneDTO. Для сортировки укажите столбец сортировки (name, price) " +
                     "и по желанию тип (asc,desc) (например, sort=price,desc). " +
-                    "Для поиска используйте параметр search") SmartphoneParams smartphoneParams
+                    "Для поиска используйте параметр search")
+            SmartphoneParams smartphoneParams
     )
     {
         Specification<Smartphone> spec = smartphoneSpecification.build(smartphoneParams);
         return ResponseEntity.ok(smartphoneService.getAllSmartphones(spec));
-    }
-
-    @PostMapping("/model/create/smartphone")
-    public ResponseEntity<SmartphoneDTO> createSmartphone(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Все значения NotNull. ApplianceId - id таблицы " +
-                    "'техника'(сущность appliance), с которой будет связана добавляемая модель смартфона")
-            @RequestBody @Valid SmartphoneRequestDTO request)
-    {
-        Model model = createCurrentModelService.createModel(request);
-
-        Smartphone smartphone = new Smartphone(null, request.getMemorySize(), request.getNumberOfCameras(), model);
-
-        return new ResponseEntity<>(smartphoneService.create(smartphone).createDTO(), HttpStatus.CREATED);
     }
 }
